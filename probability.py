@@ -6,9 +6,15 @@ weights.  Weights are normalised so they sum to 1.0 within the structure.
 
 from __future__ import annotations
 
+import sys
+import os
 from typing import Dict, List, Tuple
 
-from .models import MatchStructure
+_package_root = os.path.dirname(os.path.abspath(__file__))
+if _package_root not in sys.path:
+    sys.path.insert(0, _package_root)
+
+from models import MatchStructure
 
 
 # (score_string, raw_weight) for each structure.

@@ -6,7 +6,14 @@ the match will end 0-0 or 1-1 after extra time (i.e. require penalties).
 
 from __future__ import annotations
 
-from .models import MatchStructure, RiskLevel
+import sys
+import os
+
+_package_root = os.path.dirname(os.path.abspath(__file__))
+if _package_root not in sys.path:
+    sys.path.insert(0, _package_root)
+
+from models import MatchStructure, RiskLevel
 
 
 # Base penalty-risk probability per structure.

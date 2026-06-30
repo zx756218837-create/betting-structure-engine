@@ -5,11 +5,18 @@ Runs four representative scenarios covering each match structure.
 
 from __future__ import annotations
 
-from .models import MatchInput
-from .classifier import classify
-from .probability import compute_score_probs
-from .risk import estimate_penalty_risk, map_risk_level
-from .arbitrage import detect_edge
+import sys
+import os
+
+_package_root = os.path.dirname(os.path.abspath(__file__))
+if _package_root not in sys.path:
+    sys.path.insert(0, _package_root)
+
+from models import MatchInput
+from classifier import classify
+from probability import compute_score_probs
+from risk import estimate_penalty_risk, map_risk_level
+from arbitrage import detect_edge
 
 
 def run_example(label: str, data: dict) -> None:

@@ -6,9 +6,15 @@ whether any market inefficiency is flagged by the heuristic rules.
 
 from __future__ import annotations
 
+import sys
+import os
 from typing import Dict
 
-from .models import MatchStructure, ArbitrageSignal
+_package_root = os.path.dirname(os.path.abspath(__file__))
+if _package_root not in sys.path:
+    sys.path.insert(0, _package_root)
+
+from models import MatchStructure, ArbitrageSignal
 
 
 def detect_edge(

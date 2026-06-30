@@ -6,11 +6,19 @@ and get back a fully populated ``EngineOutput``.
 
 from __future__ import annotations
 
-from .models import MatchInput, EngineOutput
-from .classifier import classify
-from .probability import compute_score_probs
-from .risk import estimate_penalty_risk, map_risk_level
-from .arbitrage import detect_edge
+import sys
+import os
+
+# Support both: running as a package (CLI) and as a standalone script (Streamlit)
+_package_root = os.path.dirname(os.path.abspath(__file__))
+if _package_root not in sys.path:
+    sys.path.insert(0, _package_root)
+
+from models import MatchInput, EngineOutput
+from classifier import classify
+from probability import compute_score_probs
+from risk import estimate_penalty_risk, map_risk_level
+from arbitrage import detect_edge
 
 
 def run(inp: MatchInput) -> EngineOutput:
@@ -59,8 +67,6 @@ def analyze_match(data: dict) -> dict:
     dict
         Same shape as ``EngineOutput.to_dict()``.
     """
-    from .models import MatchInput
-
     inp = MatchInput.from_dict(data)
     result = run(inp)
     return result.to_dict()

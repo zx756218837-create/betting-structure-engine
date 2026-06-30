@@ -6,7 +6,14 @@ not for actual betting advice.
 
 from __future__ import annotations
 
-from .models import MatchInput, MatchStructure
+import sys
+import os
+
+_package_root = os.path.dirname(os.path.abspath(__file__))
+if _package_root not in sys.path:
+    sys.path.insert(0, _package_root)
+
+from models import MatchInput, MatchStructure
 
 
 def classify(input_data: MatchInput) -> MatchStructure:

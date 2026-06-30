@@ -11,9 +11,15 @@ Outputs structured JSON to stdout.
 from __future__ import annotations
 
 import argparse
+import sys
+import os
 
-from .models import MatchInput
-from .engine import run
+_package_root = os.path.dirname(os.path.abspath(__file__))
+if _package_root not in sys.path:
+    sys.path.insert(0, _package_root)
+
+from models import MatchInput
+from engine import run
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:

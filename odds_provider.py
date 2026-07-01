@@ -9,7 +9,14 @@ from __future__ import annotations
 import math
 from typing import Dict, Any
 
-from .team_strength import get_strength_score, get_team_info
+import sys
+import os
+
+_package_root = os.path.dirname(os.path.abspath(__file__))
+if _package_root not in sys.path:
+    sys.path.insert(0, _package_root)
+
+from team_strength import get_strength_score, get_team_info
 
 
 def generate_odds(home_team: str, away_team: str) -> Dict[str, float]:

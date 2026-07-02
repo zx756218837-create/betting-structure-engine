@@ -56,4 +56,8 @@ if rt and base:
     if history:
         st.markdown("### 变动轨迹")
         for h in history[-10:]:
-            st.caption(f"win={h.get('win_prob', 0):.4f} draw={h.get('draw_prob', 0):.4f} lose={h.get('lose_prob', 0):.4f}")
+            st.caption(
+                f"win={h.get('win_prob', 0):.4f} "
+                f"draw={h.get('draw_prob', 0):.4f} "
+                f"lose={h.get('lose_prob', 0):.4f}"
+            )

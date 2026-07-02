@@ -2,7 +2,15 @@
 
 from __future__ import annotations
 
+import sys
+import os
 from typing import Dict, List, Any
+
+# Standalone import support (Streamlit Cloud pages mode)
+_package_root = os.path.dirname(os.path.abspath(__file__))
+_parent = os.path.dirname(_package_root)
+if _parent not in sys.path:
+    sys.path.insert(0, _parent)
 
 
 class LearningModel:
@@ -15,12 +23,18 @@ class LearningModel:
     def __init__(self) -> None:
         self._history: List[Dict[str, Any]] = []
 
-    def record(self, prediction: Dict[str, Any], actual_result: Dict[str, int] | None = None) -> None:
+    def record(
+        self,
+        prediction: Dict[str, Any],
+        actual_result: Dict[str, int] | None = None,
+    ) -> None:
         """Record a prediction with optional actual result."""
         entry = {"prediction": prediction}
         if actual_result:
             entry["actual"] = actual_result
-            entry["correct"] = self._check_correct(prediction, actual_result)
+            entry["correct"] = self._check_correct(
+                prediction, actual_result
+            )
         self._history.append(entry)
 
     def accuracy(self) -> float:
@@ -34,11 +48,17 @@ class LearningModel:
         return len(self._history)
 
     @staticmethod
-    def _check_correct(prediction: Dict[str, Any], actual: Dict[str, int]) -> bool:
+    def _check_correct(
+        prediction: Dict[str, Any], actual: Dict[str, int]
+    ) -> bool:
         """Simple accuracy check: did the predicted winner match actual?"""
         rec = prediction.get("recommended_pick", "")
         if rec in ("HOME WIN", "DRAW", "AWAY WIN"):
-            mapping = {"HOME WIN": "home", "DRAW": "draw", "AWAY WIN": "away"}
+            mapping = {
+                "HOME WIN": "home",
+                "DRAW": "draw",
+                "AWAY WIN": "away",
+            }
             return actual.get(mapping[rec]) == 1
         return False
 

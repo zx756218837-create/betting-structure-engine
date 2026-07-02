@@ -2,17 +2,26 @@
 
 from __future__ import annotations
 
+import sys
+import os
 from typing import Dict, Any
 
-from ..classifier import classify
-from ..probability import compute_score_probs
-from ..risk import estimate_penalty_risk, map_risk_level
-from ..arbitrage import detect_edge
-from ..models import MatchInput, MatchStructure, EngineOutput
-from .score_model import ScoreModel
-from .probability_model import ProbabilityModel
-from .confidence import ConfidenceModel
-from .learning import LearningModel
+# Standalone import support (Streamlit Cloud pages mode)
+_package_root = os.path.dirname(os.path.abspath(__file__))
+_parent = os.path.dirname(_package_root)
+if _parent not in sys.path:
+    sys.path.insert(0, _parent)
+
+from classifier import classify
+from probability import compute_score_probs
+from risk import estimate_penalty_risk, map_risk_level
+from arbitrage import detect_edge
+from models import MatchInput, MatchStructure, EngineOutput
+from odds_provider import generate_odds
+from ai.score_model import ScoreModel
+from ai.probability_model import ProbabilityModel
+from ai.confidence import ConfidenceModel
+from ai.learning import LearningModel
 
 
 class Predictor:
@@ -43,7 +52,6 @@ class Predictor:
         - plus all legacy fields
         """
         # Step 1 — generate odds from teams
-        from ..odds_provider import generate_odds
         odds = generate_odds(home_team, away_team)
 
         # Step 2 — run existing pipeline
@@ -79,7 +87,10 @@ class Predictor:
         cold_alert = self._cold_alert(confidence, structure)
 
         # Recommended pick
-        recommended = self._recommended_pick(confidence, structure, score_probs, win_prob, draw_prob, lose_prob)
+        recommended = self._recommended_pick(
+            confidence, structure, score_probs,
+            win_prob, draw_prob, lose_prob,
+        )
 
         # Legacy fields
         penalty_risk = estimate_penalty_risk(structure)
@@ -111,17 +122,29 @@ class Predictor:
     @staticmethod
     def _btts(score_probs: Dict[str, float]) -> Dict[str, object]:
         """Estimate Both Teams To Score probability."""
-        btts_yes = sum(p for s, p in score_probs.items() if "-" in s and int(s.split("-")[0]) > 0 and int(s.split("-")[1]) > 0)
+        btts_yes = sum(
+            p
+            for s, p in score_probs.items()
+            if "-" in s
+            and int(s.split("-")[0]) > 0
+            and int(s.split("-")[1]) > 0
+        )
         return {
             "btts_yes": round(btts_yes, 4),
             "btts_no": round(1.0 - btts_yes, 4),
         }
 
     @staticmethod
-    def _over_under(odds: Dict[str, float], score_probs: Dict[str, float]) -> Dict[str, object]:
+    def _over_under(
+        odds: Dict[str, float], score_probs: Dict[str, float]
+    ) -> Dict[str, object]:
         """Estimate over/under probabilities."""
         line = odds["total_goals"]
-        over_scores = [s for s in score_probs if sum(int(x) for x in s.split("-")) > line]
+        over_scores = [
+            s
+            for s in score_probs
+            if sum(int(x) for x in s.split("-")) > line
+        ]
         over_prob = sum(score_probs[s] for s in over_scores)
         return {
             "line": line,
@@ -130,13 +153,19 @@ class Predictor:
         }
 
     @staticmethod
-    def _cold_alert(confidence: float, structure: MatchStructure) -> Dict[str, object]:
+    def _cold_alert(
+        confidence: float, structure: MatchStructure
+    ) -> Dict[str, object]:
         """Generate cold/hot alert."""
         is_cold = confidence < 0.40
         return {
             "cold": is_cold,
             "hot": not is_cold,
-            "message": "HOT PICK — High confidence signal" if not is_cold else "COLD ALERT — Low confidence, exercise caution",
+            "message": (
+                "HOT PICK — High confidence signal"
+                if not is_cold
+                else "COLD ALERT — Low confidence, exercise caution"
+            ),
         }
 
     @staticmethod

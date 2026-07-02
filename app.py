@@ -10,6 +10,13 @@ is now the multi-page app under ``pages/``.  Run with:
 from __future__ import annotations
 
 import streamlit as st
+import sys
+import os
+
+_package_root = os.path.dirname(os.path.abspath(__file__))
+if _package_root not in sys.path:
+    sys.path.insert(0, _package_root)
+
 from engine import analyze_match, analyze_match_from_teams  # noqa: E402
 
 st.set_page_config(page_title="盘口结构分析系统", page_icon="⚽", layout="centered")

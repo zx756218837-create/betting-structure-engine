@@ -2,13 +2,23 @@
 
 from __future__ import annotations
 
-from typing import Dict, List, Tuple
+import sys
+import os
+from typing import Dict, List
+
+# Standalone import support (Streamlit Cloud pages mode)
+_package_root = os.path.dirname(os.path.abspath(__file__))
+_parent = os.path.dirname(_package_root)
+if _parent not in sys.path:
+    sys.path.insert(0, _parent)
 
 
 class ScoreModel:
     """Generates ranked score-line predictions."""
 
-    def top_scores(self, score_probs: Dict[str, float], n: int = 5) -> List[Dict[str, object]]:
+    def top_scores(
+        self, score_probs: Dict[str, float], n: int = 5
+    ) -> List[Dict[str, object]]:
         """Return the top N most likely scores.
 
         Parameters
@@ -23,13 +33,17 @@ class ScoreModel:
         list[dict]
             Each dict has ``score`` and ``probability`` keys.
         """
-        sorted_scores = sorted(score_probs.items(), key=lambda x: x[1], reverse=True)
+        sorted_scores = sorted(
+            score_probs.items(), key=lambda x: x[1], reverse=True
+        )
         return [
             {"score": s, "probability": round(p, 4)}
             for s, p in sorted_scores[:n]
         ]
 
-    def expected_goals(self, score_probs: Dict[str, float]) -> Dict[str, float]:
+    def expected_goals(
+        self, score_probs: Dict[str, float]
+    ) -> Dict[str, float]:
         """Compute expected goals for home and away from score distribution."""
         home_xg = 0.0
         away_xg = 0.0

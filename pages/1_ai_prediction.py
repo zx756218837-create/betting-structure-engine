@@ -79,8 +79,8 @@ if st.button("运行 AI 预测", use_container_width=True):
     st.markdown("### 📡 实时模拟")
     rt = RealtimePredictor(result)
     tick = st.slider("模拟 Tick", 0, 20, 5)
-    for _ in range(tick):
-        rt.simulate_update(_)
+    for i in range(tick):
+        rt.simulate_update(i)
     latest = rt.latest()
     if latest:
         st.json(latest, expanded=False)

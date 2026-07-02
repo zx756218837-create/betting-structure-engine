@@ -2,9 +2,17 @@
 
 from __future__ import annotations
 
+import sys
+import os
 from typing import Dict
 
-from ..models import MatchStructure
+# Standalone import support (Streamlit Cloud pages mode)
+_package_root = os.path.dirname(os.path.abspath(__file__))
+_parent = os.path.dirname(_package_root)
+if _parent not in sys.path:
+    sys.path.insert(0, _parent)
+
+from models import MatchStructure
 
 
 class ConfidenceModel:
